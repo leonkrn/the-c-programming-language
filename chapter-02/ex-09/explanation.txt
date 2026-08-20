@@ -1,0 +1,42 @@
+/*
+* why x &= (x-1) deletes the rightmost bit set to 1 in a two's complement number system:
+*
+* x &= (x-1) is equal to x = x & (x-1) which is equal to x = x & (x+(-1))
+* in a two's complement number system the representation of the value -1 is a bit sequence of only 1's
+* because the leftmost (most significant) bit, holds a negative weight
+* 
+* In binary, addition works as follows:
+* Carry In  |   A   |   B   |   SUM |   Carry Out   |
+* –––––––––––––––––––––––––––––––––––––––––––––––––––
+*   0       |   0   |   0   |   0   |   0           |
+*   0       |   0   |   1   |   1   |   0           |
+*   0       |   1   |   0   |   1   |   0           |
+*   0       |   1   |   1   |   0   |   1           |
+*   1       |   0   |   0   |   1   |   0           |
+*   1       |   0   |   1   |   0   |   1           |
+*   1       |   1   |   0   |   0   |   1           |
+*   1       |   1   |   1   |   1   |   1           |
+*
+*
+* x + (-1) will therefore always create a 0 at the rightmost bit set to 1
+* because that bit can never recieve any carry ins
+* (since all operations to the right of it are 0 + 1 which produces no carry out, or non-existent)
+* It therefore ends up adding 1 + 1 which always produces sum = 0 with carry out = 1.
+*
+* The bitwise AND afterwards is necessary, to preserve any 0s, that occur to the right of the rightmost bit set to 1
+* since these bits would end up with 1 after the addition alone (because they are always 0 + 1 which always produces sum = 1)
+*
+* Using this approach, a faster version of bitcount can be implemented:
+*
+* the original version keeps "iterating" over the original bit sequence 
+* until the bit sequence stores only 0s (== 0). 
+* After each iteration the bitsequence is shifted to the right by one.
+* Since the bit sequence is an unsigned int, any new bit at the most significant bit position (leftmost bit)
+* for padding, will always be a 0. The counter is increased, when a one is seen on the rightmost bit position
+* which is what the bitwise & with the value 01 is used for.
+* This approach iterates over every bit to the right of the all 0 sequence - no matter if it's a 1 or a 0.
+*
+* Using x &= (x-1) to repeteadly remove the rightmost digit set to 1, and increasing the counter on each deleted one,
+* until x stores only 0s, will be faster, because it takes only the amount of iterations equal to the bits set to 1 in x,
+* and is therefore not depended on any 0s in between the ones or to the right of the rightmost bit set to 1.
+*/
