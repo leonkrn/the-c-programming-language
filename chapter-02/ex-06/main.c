@@ -14,20 +14,15 @@ unsigned setbits(unsigned x, int p, int n, unsigned y)
     // right justify the bit block of size n, starting at p (assuming the rightmost bit is index 0, and the leftmost bit the highest index)
     x = x >> (p+1-n);
 
-    // use an unsigned char for masking (be aware of promotion of c to an int when having x or y as other operand -> does not matter here because of padding with 0s)
-    unsigned char c;
+    // create an unsigned char and store ~0 (a bit sequence of only 1s) leftshifted by n (n rightmost bits are 0) in it
+    unsigned z;
+    z = ~0 << n;
 
-    // create one byte of all 1s (255 is the maximimum number for usigned char)
-    c = 255;
+    // invert y: the rightmost n bits in y are now 1s, the rest are 0s (needed for masking)
+    z = ~z;
 
-    // leftshift c by n: the rightmost n bits in c are now 0s, the rest are 1s
-    c = c << n;
-
-    // invert c: the rightmost n bits in c are now 1s, the rest are 0s (needed for masking)
-    c = ~c;
-
-    // bitwise AND x with c -> only the n rightmost bits of n will be "let through"
-    x = c & x;
+    // bitwise AND x with y -> only the n rightmost bits of x will be "let through"
+    x = z & x;
 
     // rightshift y by n bits then leftshift y by n bits: now the rightmost n bits in y are guaranteed to be 0s (needed for masking)
     y = y >> n;
