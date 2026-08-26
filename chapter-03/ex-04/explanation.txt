@@ -1,0 +1,8 @@
+The original version of itoa() does not handle the largest negative number of the type its given (-(2^wordsize-1)) correctly, because
+internally, when the function checks for a sign and then flips the sign on n, flipping the sign on the largest negative number in a twos complement machine
+will result in overflow because on a twos complement machine, the largest allowed number for a type has an absolute value that is exactly one smaller than the
+absolute value of the largest negative number of the type, which results in anything larger than the largest allowed value to wrap around.
+That means when flipping the sign on the largest negative number of a type, the resulting number is already out of range of the type, and wraps around to exactly
+the largest negative number again. That leads to the expression n % 10 * '0' being a negative expression on most machines, as modulo with a negative number is 
+implementation defined. If a negative result occurs, instead of having (modulo result) + '0' we will get -(modulo result) + '0' = (modulo result) - '0', which maps to characters
+that are defined before '0' - on ASCII normally parentheses.
